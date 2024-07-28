@@ -62,15 +62,15 @@ namespace Match_3
             arr = new Bitmap[8, 8];
             gap = (cellSize - elemSize) / 2;
 
-            for (int i = 0; i < gameplay.ElemMatrix.GetLength(0); i++)
+            for (int i = 0; i < GameSettings.MatrixSizeX; i++)
             {
-                for (int j = 0; j < gameplay.ElemMatrix.GetLength(1); j++)
+                for (int j = 0; j < GameSettings.MatrixSizeY; j++)
                 {
-                    gameplay.ElemMatrix[i, j].CurrentPositionX = gameplay.ElemMatrix[i, j].CurrentPositionX * cellSize + matrixStart.X + gap;
-                    gameplay.ElemMatrix[i, j].CurrentPositionY = gameplay.ElemMatrix[i, j].CurrentPositionY * cellSize + matrixStart.Y + gap;
-                    gameplay.ElemMatrix[i, j].EndPosition = gameplay.ElemMatrix[i, j].CurrentPosition;
+                    gameplay.PositionMatrix[i,j].x = i * cellSize + matrixStart.X + gap;
+                    gameplay.PositionMatrix[i,j].y = j * cellSize + matrixStart.Y + gap;
                 }
             }
+            gameplay.SetPositionOnElementsMatrix();
         }
 
         public void InitBufferedGraphics(BufferedGraphics bufferedGraphics)
@@ -159,45 +159,41 @@ namespace Match_3
        
         private void DrawElements()
         {
-            for (int x = 0; x < gameplay.ElemMatrix.GetLength(0); x++)
+            for (int x = 0; x < GameSettings.MatrixSizeX; x++)
             {
-                for (int y = 0; y < gameplay.ElemMatrix.GetLength(1); y++)
+                for (int y = 0; y < GameSettings.MatrixSizeY; y++)
                 {
-                    if (gameplay.ElemMatrix[x, y].foo)
+                    DrawElement(gameplay.ElemMatrix[x][y]);
+                    if (gameplay.ElemMatrix[x][y].CurrentPosition == gameplay.ElemMatrix[x][y].EndPosition)
                     {
-                        DrawElement(gameplay.ElemMatrix[x, y]);
-                        if (gameplay.ElemMatrix[x, y].CurrentPosition == gameplay.ElemMatrix[x, y].EndPosition)
+                        gameplay.ElemMatrix[x][y].OnPosition = true;
+
+                        if (gameplay.CheckMatch( x, y))
                         {
-                            gameplay.ElemMatrix[x, y].onPosition = true;
-
-                            if (gameplay.CheckMatch(gameplay.ElemMatrix[x, y], x, y))
-                            {
-                                gameplay.СollapseElements(x, y);
-                            }
-                            else
-                            {
-                                if (gameplay.TrySwichElem != null && x == gameplay.TrySwichElem.Value.x&& y == gameplay.TrySwichElem.Value.y) 
-                                {
-                                    if (gameplay.ElemMatrix[x, y].StartPosition != null)
-                                    {
-                                        if (gameplay.CheckMatch(gameplay.ElemMatrix[gameplay.SelectElement.Value.x,gameplay.SelectElement.Value.y], 
-                                                                gameplay.SelectElement.Value.x, 
-                                                                gameplay.SelectElement.Value.y))
-                                        {
-                                            gameplay.TrySwichElem = null;
-                                        }
-                                        else gameplay.SwipeElementCoord();
-                                    }
-                                }
-                                
-                            }
-
+                            gameplay.СollapseElements(x, y);
                         }
                         else
                         {
-                            gameplay.ElemMatrix[x, y].ElementShift();
+                            if (gameplay.TrySwichElem != null && x == gameplay.TrySwichElem.Value.x && y == gameplay.TrySwichElem.Value.y)
+                            {
+                                if (gameplay.ElemMatrix[x][y].StartPosition != null)
+                                {
+                                    if (gameplay.CheckMatch(gameplay.SelectElement.Value.x,gameplay.SelectElement.Value.y))
+                                    {
+                                        gameplay.TrySwichElem = null;
+                                    }
+                                    else gameplay.SwipeElementCoord();
+                                }
+                            }
+
                         }
+
                     }
+                    else
+                    {
+                        gameplay.ElemMatrix[x][y].ElementShift();
+                    }
+
                 }
             }
         }

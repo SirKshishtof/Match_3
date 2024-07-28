@@ -16,9 +16,8 @@ namespace Match_3
         protected int collorID;
         protected int points;
 
-        public bool foo;
-        public bool isDeleted;
-        public bool onPosition;
+        protected bool isDeleted;
+        protected bool onPosition;
         public Position CurrentPosition
         {
             set { currentPosition= value; }
@@ -59,15 +58,31 @@ namespace Match_3
             set { points = value; }
             get { return points; }
         }
+        public bool IsDeleted
+        {
+            set { isDeleted = value; }
+            get { return isDeleted; }
+        }
+        public bool OnPosition
+        {
+            set { onPosition = value; }
+            get { return onPosition; }
+        }
         
         public Element()
         { }
+        public Element(int collorID)
+        {
+            this.collorID = collorID;
+            points = 10;
+            onPosition = true;
+            isDeleted = false;
+        }
         public Element(Position currentPosition, int collorID)
         {
             this.currentPosition = currentPosition;
             this.collorID = collorID;
             points = 10;
-            foo = true;
             onPosition = true;
             isDeleted = false;
         }

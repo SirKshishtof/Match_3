@@ -44,6 +44,9 @@ namespace Match_3
         public static Position operator +(Position left, Position right) => new(left.x + right.x, left.y + right.y);
         public static Position operator *(int left, Position right) => new(left * right.x, left * right.y);
 
-
+        public static Position GetPosition(Position first, Position second, int count)
+        {
+            return new Position(first.x, -count *2 * (second.y - first.y));
+        }
     }
 }
