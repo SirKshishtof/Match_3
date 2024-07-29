@@ -41,6 +41,7 @@ namespace Match_3
                 {
                     drawing.Clean();
                     gameplay.IsGameStart = false;
+                    gameplay.StopTimer();
                     Ok_Button.Visible = true;
                     GameOver_label.Visible = true;
                 }
@@ -60,7 +61,12 @@ namespace Match_3
         }
         private void Ok_Button_Click(object sender, EventArgs e)
         {
-            Application.Restart();
+            Ok_Button.Visible = false;
+            GameOver_label.Visible=false;
+            Play_Button.Visible = true;
+            //Application.Restart();
+            drawing.Clean();
+            gameplay.ResetGame();
         }
 
         private void Restart_Button_Click(object sender, EventArgs e)

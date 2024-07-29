@@ -71,6 +71,11 @@ namespace Match_3
                 }
             }
             gameplay.SetPositionOnElementsMatrix();
+
+            Arrow.LeftArrow = new Position(0, cellSize / 2 - destroerSize / 2);
+            Arrow.RightArrow = new Position(cellSize-destroerSize, cellSize / 2 - destroerSize / 2);
+            Arrow.UpArrow = new Position(cellSize / 2 - destroerSize / 2,0);
+            Arrow.DownArrow = new Position(cellSize / 2 - destroerSize / 2, cellSize - destroerSize);
         }
 
         public void InitBufferedGraphics(BufferedGraphics bufferedGraphics)
@@ -124,10 +129,10 @@ namespace Match_3
             Point point = new Point(element.CurrentPositionX, element.CurrentPositionY);
             switch (element)
             {
-                case Bomb: bufferedGraphics.Graphics.DrawImage(bombImage[element.CollorID], point); break;
+                case Bomb: bufferedGraphics.Graphics.DrawImage(bombImage[element.colorID], point); break;
                 case Destroer destroer:
                     {
-                        bufferedGraphics.Graphics.DrawImage(elementImage[element.CollorID], point);
+                        bufferedGraphics.Graphics.DrawImage(elementImage[element.colorID], point);
                         destroer = (Destroer)element;
                         int x = 0;
                         int y = 0;
@@ -137,23 +142,23 @@ namespace Match_3
                                 {
                                     x = point.X;
                                     y = point.Y + elemSize / 2 - destroerSize / 2;
-                                    bufferedGraphics.Graphics.DrawImage(destroyerLeftImage[element.CollorID], new Point(x, y));
+                                    bufferedGraphics.Graphics.DrawImage(destroyerLeftImage[element.colorID], new Point(x, y));
                                     x = point.X + elemSize - destroerSize;
-                                    bufferedGraphics.Graphics.DrawImage(destroyerRightImage[element.CollorID], new Point(x, y));
+                                    bufferedGraphics.Graphics.DrawImage(destroyerRightImage[element.colorID], new Point(x, y));
                                 } break;
                             case Direction.Vertical:
                                 {
                                     x = point.X + elemSize / 2 - destroerSize / 2; ;
                                     y = point.Y;
-                                    bufferedGraphics.Graphics.DrawImage(destroyerUpImage[element.CollorID], new Point(x, y));
+                                    bufferedGraphics.Graphics.DrawImage(destroyerUpImage[element.colorID], new Point(x, y));
                                     y = point.Y + elemSize - destroerSize;
-                                    bufferedGraphics.Graphics.DrawImage(destroyerDownImage[element.CollorID], new Point(x, y));
+                                    bufferedGraphics.Graphics.DrawImage(destroyerDownImage[element.colorID], new Point(x, y));
                                 } break;
                                 
                         }
                     } break;
 
-                default: bufferedGraphics.Graphics.DrawImage(elementImage[element.CollorID], point); break;
+                default: bufferedGraphics.Graphics.DrawImage(elementImage[element.colorID], point); break;
             }
         }
        
@@ -180,6 +185,7 @@ namespace Match_3
                                 {
                                     if (gameplay.CheckMatch(gameplay.SelectElement.Value.x,gameplay.SelectElement.Value.y))
                                     {
+                                        gameplay.СollapseElements(gameplay.SelectElement.Value.x, gameplay.SelectElement.Value.y);
                                         gameplay.TrySwichElem = null;
                                     }
                                     else gameplay.SwipeElementCoord();
@@ -204,9 +210,54 @@ namespace Match_3
            
             DrawMatrix();
             DrawElements();
+            DrawArrows();
             bufferedGraphics.Render();
         }
-        
+
+        private void DrawArrows()
+        {
+            if (gameplay.Arrows.Count > 0) 
+            {
+                int index = 0;
+                while (index< gameplay.Arrows.Count())
+                {
+                    gameplay.Arrows[index].ArrowShift();
+                    Point point = new Point(gameplay.Arrows[index].Positions.x, gameplay.Arrows[index].Positions.y);
+                    switch (gameplay.Arrows[index].Direction)
+                    {
+                        case Direction.Left:
+                            {
+                                bufferedGraphics.Graphics.DrawImage(destroyerLeftImage[gameplay.Arrows[index].ColorId], point);
+                                if (gameplay.Arrows[index].Positions.x < matrixStart.X) { gameplay.Arrows.RemoveAt(index); }
+                                else index++;
+                            }
+                            break;
+                        case Direction.Right:
+                            {
+                                bufferedGraphics.Graphics.DrawImage(destroyerRightImage[gameplay.Arrows[index].ColorId], point);
+                                if (gameplay.Arrows[index].Positions.x > GetEdge_X()) { gameplay.Arrows.RemoveAt(index); }
+                                else index++;
+                            }
+                            break;
+                        case Direction.Up:
+                            {
+                                bufferedGraphics.Graphics.DrawImage(destroyerUpImage[gameplay.Arrows[index].ColorId], point);
+                                if (gameplay.Arrows[index].Positions.y < matrixStart.Y) { gameplay.Arrows.RemoveAt(index); }
+                                else index++;
+                            }
+                            break;
+                        case Direction.Down:
+                            {
+                                bufferedGraphics.Graphics.DrawImage(destroyerDownImage[gameplay.Arrows[index].ColorId], point);
+                                if (gameplay.Arrows[index].Positions.y > GetEdge_Y()) { gameplay.Arrows.RemoveAt(index); }
+                                else index++;
+                            }
+                            break;
+                    }
+
+                }
+            }
+        }
         public void DrawMatrix()
         {      
             Random random = new Random(); 

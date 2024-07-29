@@ -15,21 +15,26 @@ namespace Match_3
     public class Gameplay
     {
         private List<Element>[] elemMatrix = new List<Element>[GameSettings.MatrixSizeX];
+        private List<Arrow> arrows = new List<Arrow>();
         private Position[,] positionMatrix = new Position[GameSettings.MatrixSizeX, GameSettings.MatrixSizeY];
         private System.Windows.Forms.Timer gameTimer;
         private List<Position>[] checedElem = new List<Position>[2];
+        //летящие стрелы
         private Position? selectElem;
         private Position? trySwichElem;
         private int score;
         private int remainingTime;
         private bool isGameStart = false;
 
-
-
         public List<Element>[] ElemMatrix
         {
             set { elemMatrix = value; }
             get { return elemMatrix; }
+        }
+        public List<Arrow> Arrows
+        {
+            set { arrows = value; }
+            get { return arrows; }
         }
         public Position[,] PositionMatrix
         {
@@ -84,19 +89,6 @@ namespace Match_3
             elemMatrix[swichX][swichY].ShiftPosition = elemTrySwichShift;
             
         }
-        private void SetShift()
-        {
-            int selectX = selectElem.Value.x;
-            int selectY = selectElem.Value.y;
-
-            int swichX = trySwichElem.Value.x;
-            int swichY = trySwichElem.Value.y;
-            Position bufferPos = elemMatrix[selectX][ selectY].ShiftPosition;
-            elemMatrix[selectX][ selectY].ShiftPosition = elemMatrix[swichX][swichY].ShiftPosition;
-            elemMatrix[swichX][swichY].ShiftPosition = bufferPos;
-            //elemMatrix[selectX, selectY].ShiftPosition = -elemMatrix[selectX, selectY].ShiftPosition;
-            //elemMatrix[swichX][swichY].ShiftPosition = -elemMatrix[swichX][swichY].ShiftPosition;
-        }
         private void SwipeCoord()
         {
             int selectX = selectElem.Value.x;
@@ -106,7 +98,7 @@ namespace Match_3
             int swichY = trySwichElem.Value.y;
 
             elemMatrix[swichX][swichY].OnPosition = false;
-            elemMatrix[selectX][ selectY].OnPosition = false;
+            elemMatrix[selectX][selectY].OnPosition = false;
 
             SwipeElementInMatrix();
 
@@ -121,15 +113,6 @@ namespace Match_3
             if (elemMatrix[swichX][swichY].StartPosition == null) elemMatrix[swichX][swichY].SetStartPosition();
             else elemMatrix[swichX][swichY].NullStartPosition();
         }
-        private void SwipeCoord(Position movingElem, Position staticElem)
-        {
-            elemMatrix[staticElem.x][staticElem.y].OnPosition = false;
-
-            elemMatrix[staticElem.x][staticElem.y].CollorID = elemMatrix[movingElem.x][movingElem.y].CollorID;
-
-            elemMatrix[staticElem.x][staticElem.y].EndPosition = elemMatrix[staticElem.x][staticElem.y].CurrentPosition;
-            elemMatrix[staticElem.x][staticElem.y].CurrentPosition = elemMatrix[movingElem.x][movingElem.y].CurrentPosition;
-        }
         private void InitElementMatrix()
         {
             for (int i = 0; i < GameSettings.MatrixSizeX; i++)
@@ -142,14 +125,15 @@ namespace Match_3
             int overlap;
             do
             {
+                
                 overlap = 0;
                 for (int i = 0; i < GameSettings.MatrixSizeX; i++)
                 {
                     for (int j = 0; j < GameSettings.MatrixSizeY-1; j++)
                     {
-                        if (ElemMatrix[i][j].CollorID == elemMatrix[i][ j + 1].CollorID)
+                        if (ElemMatrix[i][j].colorID == elemMatrix[i][ j + 1].colorID)
                         {
-                            ElemMatrix[i][j].CollorID = Random.Shared.Next(5);
+                            ElemMatrix[i][j].colorID = Random.Shared.Next(5);
                             overlap++;
                         }
                     }
@@ -159,44 +143,95 @@ namespace Match_3
                 {
                     for (int i = 0; i < GameSettings.MatrixSizeY-1; i++)
                     {
-                        if (ElemMatrix[i][j].CollorID == elemMatrix[i+1][ j].CollorID)
+                        if (ElemMatrix[i][j].colorID == elemMatrix[i+1][ j].colorID)
                         {
-                            ElemMatrix[i][j].CollorID = Random.Shared.Next(5);
+                            ElemMatrix[i][j].colorID = Random.Shared.Next(5);
                             overlap++;
                         }
                     }
                 }
 
             } while (overlap != 0);
+            //elemMatrix[3][3] = new Bomb(elemMatrix[3][3]);
         }
         private bool CheckBonus(int x, int y)
         {
 
             if (checedElem[0].Count() > 1 && checedElem[1].Count() > 1)
             {
-                elemMatrix[x][ x] = new Bomb(elemMatrix[x][y]);
+                elemMatrix[x][ y] = new Bomb(elemMatrix[x][y]);
             }
             else
             {
                 for (int i = 0; i < 2; i++)
                 {
-                    if (checedElem[i].Count < 1) { checedElem[i].Clear(); }
-                    else
+                    if (checedElem[i].Count > 2) 
                     {
-                        elemMatrix[0][ 0] = new Destroer(elemMatrix[x][ y], Direction.Vertical);
                         switch (checedElem[i].Count())
                         {
                             case 3:
                                 {
-                                    if (i == 0) { elemMatrix[x][ y] = new Destroer(elemMatrix[x][ y], Direction.Vertical); }
-                                    else { elemMatrix[x][ y] = new Destroer(elemMatrix[x][y], Direction.Horizontal); }
-                                }break;
-                            case >4: elemMatrix[x][y] = new Bomb(elemMatrix[x][y]); return true;
+                                    Destroer destroer = new Destroer(elemMatrix[x][y]);
+
+                                    if (i == 0)
+                                    {
+                                        destroer.Direction = Direction.Horizontal;
+                                        destroer.Arrows[0] = new Arrow(Direction.Left);
+                                        destroer.Arrows[1] = new Arrow(Direction.Right);
+                                        destroer.Arrows[0].ColorId = destroer.colorID;
+                                        destroer.Arrows[1].ColorId = destroer.colorID;
+                                        elemMatrix[x][y] = destroer;
+                                    }
+                                    else
+                                    {
+                                        destroer.Direction = Direction.Vertical;
+                                        destroer.Arrows[0] = new Arrow(Direction.Up);
+                                        destroer.Arrows[1] = new Arrow(Direction.Down);
+                                        destroer.Arrows[0].ColorId = destroer.colorID;
+                                        destroer.Arrows[1].ColorId = destroer.colorID;
+                                        elemMatrix[x][y] = destroer;
+                                    }
+                                }
+                                break;
+                            case >3: elemMatrix[x][y] = new Bomb(elemMatrix[x][y]); return true;
                         }
                     }
                 }
             }
             return false;
+        }
+        private void СollapseDestroer(int x, int y)
+        {
+            Destroer destroer = (Destroer)elemMatrix[x][y];
+
+            for (int i = 0; i < 2; i++)
+            {
+                destroer.Arrows[i].SetPosition(elemMatrix[x][y].CurrentPosition);
+                destroer.Arrows[i].SetSpeed();
+                arrows.Add(destroer.Arrows[i]);
+            }
+
+            if (destroer.Direction == Direction.Horizontal)
+            {
+                for (int i = 0; i < GameSettings.MatrixSizeX; i++) elemMatrix[i][y].IsDeleted = true;
+            }
+            else
+            {
+                for (int j = 0; j < GameSettings.MatrixSizeY; j++) elemMatrix[x][j].IsDeleted = true;
+            }
+        }
+        private void СollapseBomb(int x, int y)
+        {
+            for (int i = x - Bomb.Radius; i <= x + Bomb.Radius; i++)
+            {
+                for (int j = x - Bomb.Radius; j <= x + Bomb.Radius; j++)
+                {
+                    if (i > -1 && i < GameSettings.MatrixSizeX && j > -1 && j < GameSettings.MatrixSizeX)
+                    {
+                        elemMatrix[i][j].IsDeleted = true;
+                    }
+                }
+            }
         }
         private void DeleteElements(int x, int y)
         {
@@ -205,7 +240,6 @@ namespace Match_3
                 elemMatrix[x][y].IsDeleted = true;
             }
 
-            elemMatrix[x][y].IsDeleted = true;
 
             if (checedElem[0].Count < 2) checedElem[0].Clear();
             if (checedElem[1].Count < 2) checedElem[1].Clear();
@@ -216,6 +250,11 @@ namespace Match_3
                 {
                     Position pos = checedElem[i][j];
                     elemMatrix[pos.x][pos.y].IsDeleted = true ;
+                    switch (elemMatrix[pos.x][pos.y])
+                    {
+                        case Bomb: СollapseBomb(pos.x, pos.y); break;
+                        case Destroer: СollapseDestroer(pos.x, pos.y); break;
+                    }
                 }
             }
 
@@ -246,29 +285,10 @@ namespace Match_3
         }
         private void SwipeElementInMatrix()
         {
-            int buf = elemMatrix[selectElem.Value.x][selectElem.Value.y].CollorID;
-            elemMatrix[selectElem.Value.x][selectElem.Value.y].CollorID = elemMatrix[trySwichElem.Value.x][trySwichElem.Value.y].CollorID;
-            elemMatrix[trySwichElem.Value.x][trySwichElem.Value.y].CollorID = buf;
-        }
-        private void CheckLine(int x0, int y0, int index, bool secondPart)
-        {
-            int partLine;
-            if (secondPart)partLine = 0;
-            else partLine = 2;
-            List<Position> posDirect = [Position.Up, Position.Left, Position.Down, Position.Right];
 
-            int x = x0 + posDirect[index].x;
-            int y = y0 + posDirect[index].y;
-            while (x > -1 && x < GameSettings.MatrixSizeX && y > -1 && y < GameSettings.MatrixSizeX)
-            {
-                if (elemMatrix[x0][y0].CollorID == elemMatrix[x][y].CollorID && elemMatrix[x][y].OnPosition)
-                {
-                    checedElem[index].Add(new Position(x, y));
-                    x += posDirect[index + partLine].x;
-                    y += posDirect[index + partLine].y;
-                }
-                else break;
-            }
+            int buf = elemMatrix[selectElem.Value.x][selectElem.Value.y].colorID;
+            elemMatrix[selectElem.Value.x][selectElem.Value.y].colorID = elemMatrix[trySwichElem.Value.x][trySwichElem.Value.y].colorID;
+            elemMatrix[trySwichElem.Value.x][trySwichElem.Value.y].colorID = buf;
         }
         private void SpawnNewElements()
         {
@@ -299,6 +319,7 @@ namespace Match_3
             }
         }
 
+        public void DeletArrow(int index) => Arrows.RemoveAt(index);
         public void SetPositionOnElementsMatrix()
         {
             for (int i = 0; i < GameSettings.MatrixSizeX; i++)
@@ -307,6 +328,7 @@ namespace Match_3
                 {
                     elemMatrix[i][j].CurrentPosition = positionMatrix[i, j];
                     elemMatrix[i][j].EndPosition = elemMatrix[i][j].CurrentPosition;
+                    elemMatrix[i][j].OnPosition = true;
                 }
             }
 
@@ -332,7 +354,7 @@ namespace Match_3
                 y = y0 + posDirect[i].y;
                 while (x > -1 && x < GameSettings.MatrixSizeX && y > -1 && y < GameSettings.MatrixSizeX)
                 {
-                    if (elemMatrix[x0][y0].CollorID == elemMatrix[x][y].CollorID && elemMatrix[x][y].OnPosition)
+                    if (elemMatrix[x0][y0].colorID == elemMatrix[x][y].colorID && elemMatrix[x][y].OnPosition)
                     {
                         checedElem[i].Add(new Position(x, y));
                         x += posDirect[i].x;
@@ -345,7 +367,7 @@ namespace Match_3
                 y = y0 + posDirect[i + 2].y;
                 while (x > -1 && x < GameSettings.MatrixSizeX && y > -1 && y < GameSettings.MatrixSizeX)
                 {
-                    if (elemMatrix[x0][y0].CollorID == elemMatrix[x][y].CollorID && elemMatrix[x][y].OnPosition)
+                    if (elemMatrix[x0][y0].colorID == elemMatrix[x][y].colorID && elemMatrix[x][y].OnPosition)
                     {
                         checedElem[i].Add(new Position(x, y));
                         x += posDirect[i + 2].x;
@@ -353,15 +375,12 @@ namespace Match_3
                     }
                     else break;
                 }
-                //CheckLine(x0, y0,i,false);
-                //CheckLine(x0, y0, i, true);
             }
 
-            if (checedElem[0].Count() > 1 || checedElem[1].Count() > 1) return true;
+            if (checedElem[0].Count() > 1 || checedElem[1].Count() > 1)
+            { return true; }
             else
             {
-                //selectElem = null;
-                //trySwichElem = null;
                 checedElem[0].Clear();
                 checedElem[1].Clear();
                 return false;
@@ -369,7 +388,7 @@ namespace Match_3
         }
         public void СollapseElements(int x, int y)
         {
-            //CheckBonus();
+            CheckBonus(x,y);
             DeleteElements(x, y);
             SpawnNewElements();
             UpdetePositions();
@@ -380,64 +399,67 @@ namespace Match_3
             gameTimer.Start();
         }
         public void StopTimer() => gameTimer.Stop();
+        public void ResetGame()
+        {
+            for (int i = 0; i < GameSettings.MatrixSizeX; i++) elemMatrix[i].Clear();
+            List<Position>[] checedElem = new List<Position>[2];
+            Position? selectElem = null;
+            Position? trySwichElem = null;
+            score = 0;
+            remainingTime = GameSettings.TimeCount;
+            isGameStart = false;
+            InitElementMatrix();
+            SetPositionOnElementsMatrix();
+        }
         
     }
 }
 
-
-//x = x0 + posDirect[i].x;
-//y = y0 + posDirect[i].y;
-//while (x > -1 && x < GameSettings.MatrixSizeX && y > -1 && y < GameSettings.MatrixSizeX)
 //{
-//    if (elemMatrix[x0][y0].CollorID == elemMatrix[x][y].CollorID && elemMatrix[x][y].onPosition)
+//    Position[] posDirect = [Position.Up, Position.Left, Position.Down, Position.Right];
+
+//    int selectX = selectElem.Value.x;
+//    int selectY = selectElem.Value.y;
+
+//    int swichX;
+//    int swichY;
+
+//    for (int i = 0; i < 2; i++)
 //    {
-//        checedElem[i].Add(new Position(x, y));
-//        x += posDirect[i].x;
-//        y += posDirect[i].y;
-//    }
-//    else break;
-//}
+//        swichX = trySwichElem.Value.x + posDirect[i].x;
+//        swichY = trySwichElem.Value.y + posDirect[i].y;
 
-//x = x0 + posDirect[i + 2].x;
-//y = y0 + posDirect[i + 2].y;
-//while (x > -1 && x < GameSettings.MatrixSizeX && y > -1 && y < GameSettings.MatrixSizeX)
-//{
-//    if (elemMatrix[x0][y0].CollorID == elemMatrix[x][y].CollorID && elemMatrix[x][y].onPosition)
+//        while (swichX >= 0 && swichX < GameSettings.MatrixSizeX && swichY >= 0 && swichY < GameSettings.MatrixSizeX)
+//        {
+//            if (elemMatrix[selectX, selectY].CollorID == elemMatrix[swichX, swichY].CollorID)
+//            {
+//                swichX += posDirect[i].x;
+//                swichY += posDirect[i].y;
+//                checedElem[i].Add(new Position(swichX, swichY));
+//            }
+//            else break;
+//        }
+
+//        swichX = trySwichElem.Value.x + posDirect[i + 2].x;
+//        swichY = trySwichElem.Value.y + posDirect[i + 2].y;
+
+//        while (swichX >= 0 && swichX < GameSettings.MatrixSizeX && swichY >= 0 && 0 < GameSettings.MatrixSizeX)
+//        {
+//            if (elemMatrix[selectX, selectY].CollorID == elemMatrix[swichX, swichY].CollorID)
+//            {
+//                swichX += posDirect[i + 2].x;
+//                swichY += posDirect[i + 2].y;
+//                checedElem[i].Add(new Position(swichX, swichY));
+//            }
+//            else break;
+//        }
+//    }
+
+//    if (checedElem[0].Count() >= 2 || checedElem[1].Count() >= 2) return true;
+//    else
 //    {
-//        checedElem[i].Add(new Position(x, y));
-//        x += posDirect[i + 2].x;
-//        y += posDirect[i + 2].y;
+//        checedElem[0].Clear();
+//        checedElem[1].Clear();
+//        return false;
 //    }
-//    else break;
 //}
-
-////x0 = selectElem.Value.x;
-////y0 = selectElem.Value.y;
-
-////if (checedElem[0].Count() > 2 && checedElem[1].Count() > 2)
-////{
-////    itemMatrix[x0, y0] = new Bomb(itemMatrix[x0, y0]);
-////    //бомба на пересечинии  
-////}
-////else
-////{
-////    for (int i = 0; i < 2; i++)
-////    {
-////        if (checedElem[i].Count < 2) { checedElem[i].Clear(); }
-////        else
-////        {
-////            itemMatrix[0, 0] = new Destroer(itemMatrix[x0, y0], Direction.Vertical);
-////            switch (checedElem[i].Count())
-////            {
-////                case 3: /*простое уничтожение элементов*/ break;
-////                case 4:
-////                    {
-////                        if (i == 0) { itemMatrix[x0, y0] = new Destroer(itemMatrix[x0, y0], Direction.Vertical); }
-////                        else { itemMatrix[x0, y0] = new Destroer(itemMatrix[x0, y0], Direction.Horizontal); }
-////                    }
-////                    break;
-////                default: itemMatrix[x0, y0] = new Bomb(itemMatrix[x0, y0]); break;
-////            }
-////        }
-////    }
-////}

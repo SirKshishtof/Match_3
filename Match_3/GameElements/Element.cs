@@ -4,6 +4,7 @@ using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 
 namespace Match_3
 {
@@ -13,7 +14,7 @@ namespace Match_3
         protected Position endPosition;
         protected Position? startPosition;
         protected Position shiftPsition;
-        protected int collorID;
+        protected int ColorID;
         protected int points;
 
         protected bool isDeleted;
@@ -48,10 +49,10 @@ namespace Match_3
             set { shiftPsition = value; }
             get { return shiftPsition; }
         }
-        public int CollorID
+        public int colorID
         {
-            set { collorID = value; }
-            get { return collorID; }
+            set { ColorID = value; }
+            get { return ColorID; }
         }
         public int Points
         {
@@ -73,73 +74,78 @@ namespace Match_3
         { }
         public Element(int collorID)
         {
-            this.collorID = collorID;
+            this.ColorID = collorID;
             points = 10;
             onPosition = true;
             isDeleted = false;
         }
-        public Element(Position currentPosition, int collorID)
+        public Element(Position currentPosition, int colorID)
         {
             this.currentPosition = currentPosition;
-            this.collorID = collorID;
+            this.ColorID = colorID;
             points = 10;
             onPosition = true;
             isDeleted = false;
         }
-        public Element(Element elem)
+        public Element(Element element)
         {
-            this.currentPosition = elem.currentPosition;
-            this.collorID = elem.CollorID;
+            currentPosition = element.CurrentPosition;
+            endPosition = element.EndPosition;
+            startPosition = element.StartPosition;
+            ColorID = element.ColorID;
+            onPosition = element.OnPosition;
+            isDeleted = element.IsDeleted;
             points = 10;
         }
         public void SetStartPosition() => startPosition = currentPosition;
         public void NullStartPosition() => startPosition = null;
         public void ElementShift() => currentPosition += 5*shiftPsition;
-        public object Clone() => new Element(new Position(currentPosition.x, currentPosition.y), collorID);
+        public object Clone() => new Element(new Position(currentPosition.x, currentPosition.y), ColorID);
     }
 
     public class Bomb : Element
     {
-        private int radius;
-        public int Radius
-        {
-            set { radius = value; }
-            get { return radius; }
-        }
-        public Bomb(Position position, int collorID) : base(position, collorID)
+        private static int radius =1;
+        public static int Radius => radius;
+        
+        public Bomb(Position position, int colorID) : base(position, colorID)
         {
             points = 100;
             radius = 1;
         }
-        public Bomb(Element element)
+        public Bomb(Element element):base(element) 
         {
-            currentPosition = element.CurrentPosition;
-            collorID = element.CollorID;
-            points = 100;
-            radius = 1;
+            points = 100; 
         }
     }
     public class Destroer : Element
     {
         private Direction direction;
-
+        Arrow[] arrows = new Arrow[2];
+        public Arrow[] Arrows 
+        {
+            get { return arrows; }
+            set { arrows = value; }
+        }
         public Direction Direction
         {
             set { direction = value; }
             get { return direction; }
         }
-        public Destroer(Position Position, Direction direction, int collorID) : base(Position, collorID)
+        public Destroer(Position Position, Direction direction, int colorID) : base(Position, colorID)
         {
             points = 80;
             this.direction = direction;
         }
 
-        public Destroer(Element element, Direction direction)
+        public Destroer(Element element, Direction direction): base (element)
         {
-            currentPosition = element.CurrentPosition;
-            collorID = element.CollorID;
             points = 100;
             this.direction = direction;
+        }
+        public Destroer(Element element) : base(element)
+        {
+            points = 100;
         }
     }
 }
