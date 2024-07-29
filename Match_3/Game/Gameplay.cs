@@ -19,7 +19,6 @@ namespace Match_3
         private Position[,] positionMatrix = new Position[GameSettings.MatrixSizeX, GameSettings.MatrixSizeY];
         private System.Windows.Forms.Timer gameTimer;
         private List<Position>[] checedElem = new List<Position>[2];
-        //летящие стрелы
         private Position? selectElem;
         private Position? trySwichElem;
         private int score;
@@ -224,7 +223,7 @@ namespace Match_3
         {
             for (int i = x - Bomb.Radius; i <= x + Bomb.Radius; i++)
             {
-                for (int j = x - Bomb.Radius; j <= x + Bomb.Radius; j++)
+                for (int j = y - Bomb.Radius; j <= y + Bomb.Radius; j++)
                 {
                     if (i > -1 && i < GameSettings.MatrixSizeX && j > -1 && j < GameSettings.MatrixSizeX)
                     {
@@ -299,6 +298,7 @@ namespace Match_3
                 {
                     elemMatrix[i].Insert(0, new Element(Random.Shared.Next(5)));
                     elemMatrix[i][0].CurrentPosition = Position.GetPosition(positionMatrix[i,0], positionMatrix[i,1], count);
+                    count++;
                 }
             }
         }
@@ -414,52 +414,3 @@ namespace Match_3
         
     }
 }
-
-//{
-//    Position[] posDirect = [Position.Up, Position.Left, Position.Down, Position.Right];
-
-//    int selectX = selectElem.Value.x;
-//    int selectY = selectElem.Value.y;
-
-//    int swichX;
-//    int swichY;
-
-//    for (int i = 0; i < 2; i++)
-//    {
-//        swichX = trySwichElem.Value.x + posDirect[i].x;
-//        swichY = trySwichElem.Value.y + posDirect[i].y;
-
-//        while (swichX >= 0 && swichX < GameSettings.MatrixSizeX && swichY >= 0 && swichY < GameSettings.MatrixSizeX)
-//        {
-//            if (elemMatrix[selectX, selectY].CollorID == elemMatrix[swichX, swichY].CollorID)
-//            {
-//                swichX += posDirect[i].x;
-//                swichY += posDirect[i].y;
-//                checedElem[i].Add(new Position(swichX, swichY));
-//            }
-//            else break;
-//        }
-
-//        swichX = trySwichElem.Value.x + posDirect[i + 2].x;
-//        swichY = trySwichElem.Value.y + posDirect[i + 2].y;
-
-//        while (swichX >= 0 && swichX < GameSettings.MatrixSizeX && swichY >= 0 && 0 < GameSettings.MatrixSizeX)
-//        {
-//            if (elemMatrix[selectX, selectY].CollorID == elemMatrix[swichX, swichY].CollorID)
-//            {
-//                swichX += posDirect[i + 2].x;
-//                swichY += posDirect[i + 2].y;
-//                checedElem[i].Add(new Position(swichX, swichY));
-//            }
-//            else break;
-//        }
-//    }
-
-//    if (checedElem[0].Count() >= 2 || checedElem[1].Count() >= 2) return true;
-//    else
-//    {
-//        checedElem[0].Clear();
-//        checedElem[1].Clear();
-//        return false;
-//    }
-//}

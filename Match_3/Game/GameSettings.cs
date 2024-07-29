@@ -12,7 +12,7 @@ namespace Match_3
     {
         private static int timeCount = 240;
         private static int framesPerPeriod = 60;
-        private static int drawInterval = 600 / framesPerPeriod;
+        private static int drawInterval = 500 / framesPerPeriod;
         private static int gameInterval = 1000;
         private static int matrixSizeX = 8;
         private static int matrixSizeY = 8;

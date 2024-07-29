@@ -92,6 +92,6 @@ namespace Match_3
                 case Direction.Down:speed = Position.Down; break;
             }
         }
-        public void ArrowShift() => position += 20 * speed;
+        public void ArrowShift() => position += 30 * speed;
     }
 }

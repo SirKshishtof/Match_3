@@ -46,7 +46,7 @@ namespace Match_3
 
         public static Position GetPosition(Position first, Position second, int count)
         {
-            return new Position(first.x, -count *2 * (second.y - first.y));
+            return new Position(first.x, -count * (second.y - first.y));
         }
     }
 }
