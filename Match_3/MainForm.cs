@@ -43,7 +43,7 @@ namespace Match_3
                     gameplay.IsGameStart = false;
                     gameplay.StopTimer();
                     Ok_Button.Visible = true;
-                    GameOver_label.Text = $"{GameOver_label.Text }\nScore:{gameplay.Score}";
+                    GameOver_label.Text = $"GameOver_label\nScore:{gameplay.Score}";
                     GameOver_label.Visible = true;
                 }
             }
