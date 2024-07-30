@@ -8,13 +8,13 @@ using System.Xml.Linq;
 
 namespace Match_3
 {
-    public class Element:ICloneable
+    public class Element
     {
         protected Position currentPosition;
         protected Position endPosition;
         protected Position? startPosition;
         protected Position shiftPsition;
-        protected int ColorID;
+        protected int colorID;
         protected int points;
 
         protected bool isDeleted;
@@ -49,10 +49,10 @@ namespace Match_3
             set { shiftPsition = value; }
             get { return shiftPsition; }
         }
-        public int colorID
+        public int ColorID
         {
-            set { ColorID = value; }
-            get { return ColorID; }
+            set { colorID = value; }
+            get { return colorID; }
         }
         public int Points
         {
@@ -74,25 +74,19 @@ namespace Match_3
         { }
         public Element(int collorID)
         {
-            this.ColorID = collorID;
+            this.colorID = collorID;
             points = 10;
             onPosition = true;
             isDeleted = false;
         }
-        public Element(Position currentPosition, int colorID)
-        {
-            this.currentPosition = currentPosition;
-            this.ColorID = colorID;
-            points = 10;
-            onPosition = true;
-            isDeleted = false;
-        }
+       
+         
         public Element(Element element)
         {
             currentPosition = element.CurrentPosition;
             endPosition = element.EndPosition;
             startPosition = element.StartPosition;
-            ColorID = element.ColorID;
+            colorID = element.colorID;
             onPosition = element.OnPosition;
             isDeleted = element.IsDeleted;
             points = 10;
@@ -100,19 +94,12 @@ namespace Match_3
         public void SetStartPosition() => startPosition = currentPosition;
         public void NullStartPosition() => startPosition = null;
         public void ElementShift() => currentPosition += 5*shiftPsition;
-        public object Clone() => new Element(new Position(currentPosition.x, currentPosition.y), ColorID);
     }
 
     public class Bomb : Element
     {
         private static int radius =1;
         public static int Radius => radius;
-        
-        public Bomb(Position position, int colorID) : base(position, colorID)
-        {
-            points = 100;
-            radius = 1;
-        }
         public Bomb(Element element):base(element) 
         {
             points = 100; 
@@ -121,7 +108,7 @@ namespace Match_3
     public class Destroer : Element
     {
         private Direction direction;
-        Arrow[] arrows = new Arrow[2];
+        Arrow[] arrows;
         public Arrow[] Arrows 
         {
             get { return arrows; }
@@ -132,19 +119,10 @@ namespace Match_3
             set { direction = value; }
             get { return direction; }
         }
-        public Destroer(Position Position, Direction direction, int colorID) : base(Position, colorID)
-        {
-            points = 80;
-            this.direction = direction;
-        }
-
-        public Destroer(Element element, Direction direction): base (element)
-        {
-            points = 100;
-            this.direction = direction;
-        }
+        
         public Destroer(Element element) : base(element)
         {
+            arrows = new Arrow[2];
             points = 100;
         }
     }

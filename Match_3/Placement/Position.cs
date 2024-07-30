@@ -31,16 +31,11 @@ namespace Match_3
             this.x = x;
             this.y = y;
         }
-        public static bool operator <(Position left, Position right) => left.x < right.x && left.y < right.y;
-        public static bool operator >(Position left, Position right) => left.x > right.x && left.y > right.y;
-        public static bool operator <=(Position left, Position right) => left.x <= right.x && left.y <= right.y;
-        public static bool operator >=(Position left, Position right) => left.x >= right.x && left.y >= right.y;
         public static bool operator ==(Position left, Position right) => left.x == right.x && left.y == right.y;
         public static bool operator !=(Position left, Position right) => !(left == right);
 
 
         public static Position operator -(Position position) => new(-position.x, -position.y);
-        public static Position operator -(Position left, Position right) => new(left.x - right.x, left.y - right.y);
         public static Position operator +(Position left, Position right) => new(left.x + right.x, left.y + right.y);
         public static Position operator *(int left, Position right) => new(left * right.x, left * right.y);
 

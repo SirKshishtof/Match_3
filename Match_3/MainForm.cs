@@ -48,7 +48,7 @@ namespace Match_3
             }
         }
         private void UpdateImage(object? sender, EventArgs e) => Invalidate(new Rectangle(0, 0, 1, 1));
-
+        private void UpdateGame(object? sender, EventArgs e) => Invalidate(new Rectangle(0, 0, 1, 1));
         private void MainForm_MouseClick(object sender, MouseEventArgs e)
         {
             inputHandler.HendelMouseClick(e);
@@ -64,14 +64,9 @@ namespace Match_3
             Ok_Button.Visible = false;
             GameOver_label.Visible=false;
             Play_Button.Visible = true;
-            //Application.Restart();
             drawing.Clean();
             gameplay.ResetGame();
         }
 
-        private void Restart_Button_Click(object sender, EventArgs e)
-        {
-            Application.Restart();
-        }
     }
 }

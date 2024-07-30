@@ -31,7 +31,6 @@
             Play_Button = new Button();
             Ok_Button = new Button();
             GameOver_label = new Label();
-            Restart_Button = new Button();
             SuspendLayout();
             // 
             // Play_Button
@@ -69,23 +68,11 @@
             GameOver_label.Text = "Game over";
             GameOver_label.Visible = false;
             // 
-            // Restart_Button
-            // 
-            Restart_Button.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point, 204);
-            Restart_Button.Location = new Point(1, 3);
-            Restart_Button.Name = "Restart_Button";
-            Restart_Button.Size = new Size(75, 36);
-            Restart_Button.TabIndex = 3;
-            Restart_Button.Text = "Restart";
-            Restart_Button.UseVisualStyleBackColor = true;
-            Restart_Button.Click += Restart_Button_Click;
-            // 
             // MainForm
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(951, 653);
-            Controls.Add(Restart_Button);
             Controls.Add(GameOver_label);
             Controls.Add(Ok_Button);
             Controls.Add(Play_Button);
@@ -105,6 +92,5 @@
         private Button Play_Button;
         private Button Ok_Button;
         private Label GameOver_label;
-        private Button Restart_Button;
     }
 }

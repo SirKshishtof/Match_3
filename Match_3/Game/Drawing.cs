@@ -22,10 +22,10 @@ namespace Match_3
 
 
         private BufferedGraphics bufferedGraphics;
-        Point matrixStart;
+        private Point matrixStart;
         private int elemSize;
         private int destroerSize;
-        public int cellSize;
+        private int cellSize;
         private int gapBetweenCell;
         private int gap;
 
@@ -78,11 +78,6 @@ namespace Match_3
             Arrow.DownArrow = new Position(cellSize / 2 - destroerSize / 2, cellSize - destroerSize);
         }
 
-        public void InitBufferedGraphics(BufferedGraphics bufferedGraphics)
-        {
-            this.bufferedGraphics = bufferedGraphics;
-        }
-
         public void DrawScoreAndTime(int score, int timer)
         {
             int x = 1300;
@@ -129,10 +124,10 @@ namespace Match_3
             Point point = new Point(element.CurrentPositionX, element.CurrentPositionY);
             switch (element)
             {
-                case Bomb: bufferedGraphics.Graphics.DrawImage(bombImage[element.colorID], point); break;
+                case Bomb: bufferedGraphics.Graphics.DrawImage(bombImage[element.ColorID], point); break;
                 case Destroer destroer:
                     {
-                        bufferedGraphics.Graphics.DrawImage(elementImage[element.colorID], point);
+                        bufferedGraphics.Graphics.DrawImage(elementImage[element.ColorID], point);
                         destroer = (Destroer)element;
                         int x = 0;
                         int y = 0;
@@ -142,23 +137,23 @@ namespace Match_3
                                 {
                                     x = point.X;
                                     y = point.Y + elemSize / 2 - destroerSize / 2;
-                                    bufferedGraphics.Graphics.DrawImage(destroyerLeftImage[element.colorID], new Point(x, y));
+                                    bufferedGraphics.Graphics.DrawImage(destroyerLeftImage[element.ColorID], new Point(x, y));
                                     x = point.X + elemSize - destroerSize;
-                                    bufferedGraphics.Graphics.DrawImage(destroyerRightImage[element.colorID], new Point(x, y));
+                                    bufferedGraphics.Graphics.DrawImage(destroyerRightImage[element.ColorID], new Point(x, y));
                                 } break;
                             case Direction.Vertical:
                                 {
                                     x = point.X + elemSize / 2 - destroerSize / 2; ;
                                     y = point.Y;
-                                    bufferedGraphics.Graphics.DrawImage(destroyerUpImage[element.colorID], new Point(x, y));
+                                    bufferedGraphics.Graphics.DrawImage(destroyerUpImage[element.ColorID], new Point(x, y));
                                     y = point.Y + elemSize - destroerSize;
-                                    bufferedGraphics.Graphics.DrawImage(destroyerDownImage[element.colorID], new Point(x, y));
+                                    bufferedGraphics.Graphics.DrawImage(destroyerDownImage[element.ColorID], new Point(x, y));
                                 } break;
                                 
                         }
                     } break;
 
-                default: bufferedGraphics.Graphics.DrawImage(elementImage[element.colorID], point); break;
+                default: bufferedGraphics.Graphics.DrawImage(elementImage[element.ColorID], point); break;
             }
         }
        
@@ -169,37 +164,7 @@ namespace Match_3
                 for (int y = 0; y < GameSettings.MatrixSizeY; y++)
                 {
                     DrawElement(gameplay.ElemMatrix[x][y]);
-                    if (gameplay.ElemMatrix[x][y].CurrentPosition == gameplay.ElemMatrix[x][y].EndPosition)
-                    {
-                        gameplay.ElemMatrix[x][y].OnPosition = true;
-
-                        if (gameplay.CheckMatch( x, y))
-                        {
-                            gameplay.СollapseElements(x, y);
-                        }
-                        else
-                        {
-                            if (gameplay.TrySwichElem != null && x == gameplay.TrySwichElem.Value.x && y == gameplay.TrySwichElem.Value.y)
-                            {
-                                if (gameplay.ElemMatrix[x][y].StartPosition != null)
-                                {
-                                    if (gameplay.CheckMatch(gameplay.SelectElement.Value.x,gameplay.SelectElement.Value.y))
-                                    {
-                                        gameplay.СollapseElements(gameplay.SelectElement.Value.x, gameplay.SelectElement.Value.y);
-                                        gameplay.TrySwichElem = null;
-                                    }
-                                    else gameplay.SwipeElementCoord();
-                                }
-                            }
-
-                        }
-
-                    }
-                    else
-                    {
-                        gameplay.ElemMatrix[x][y].ElementShift();
-                    }
-
+                    gameplay.CheckElementsForCollapse(x, y);
                 }
             }
         }
@@ -207,7 +172,6 @@ namespace Match_3
         {
             bufferedGraphics.Graphics.Clear(Color.White);
             DrawScoreAndTime(gameplay.Score, gameplay.RemainingTime);
-           
             DrawMatrix();
             DrawElements();
             DrawArrows();
@@ -272,18 +236,16 @@ namespace Match_3
                 }
             }
 
-            if (gameplay.SelectElement != null)
+            if (gameplay.SelectElem != null)
             {
-                rect.Location = new Point(gameplay.SelectElement.Value.x * cellSize + matrixStart.X, gameplay.SelectElement.Value.y * cellSize + matrixStart.Y);
+                rect.Location = new Point(gameplay.SelectElem.Value.x * cellSize + matrixStart.X, gameplay.SelectElem.Value.y * cellSize + matrixStart.Y);
                 bufferedGraphics.Graphics.FillRectangle(new SolidBrush(Color.LightSeaGreen), rect);
                 bufferedGraphics.Graphics.DrawRectangle(new Pen(Color.White, 5), rect);
             }
         }
-        public Position GetPixelPos(int x, int y) => new Position(x * cellSize + matrixStart.X + gap, y * cellSize + matrixStart.Y + gap);
         
         public void Clean() { bufferedGraphics.Graphics.Clear(Color.White); bufferedGraphics.Render(); }
         public void StartTimer() => frameTimer.Start();
-        public void StopTimer() => frameTimer.Stop();
         public void SetMetodInTick(EventHandler eventHandler) => frameTimer.Tick += eventHandler;
     }
 }

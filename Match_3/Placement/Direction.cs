@@ -9,8 +9,8 @@ namespace Match_3
     public enum Direction
     {
         Non,
-        Up=1,
-        Down=2,
+        Up,
+        Down,
         Left,
         Right,
         Vertical,

@@ -10,20 +10,16 @@ namespace Match_3
 {
     public class Arrow
     {
-        public static Position LeftArrow;
-        public static Position RightArrow;
-        public static Position UpArrow;
-        public static Position DownArrow;
-
-        public Arrow(Direction direction) 
-        {
-            this.Direction = direction;
-        }
-
         private int colorId;
         private Position position;
         private Direction direction;
         private Position speed;
+
+
+        public static Position LeftArrow;
+        public static Position RightArrow;
+        public static Position UpArrow;
+        public static Position DownArrow;
 
         public Direction Direction
         {
@@ -44,6 +40,10 @@ namespace Match_3
         { 
             get { return colorId; }
             set { colorId = value; } 
+        }
+        public Arrow(Direction direction)
+        {
+            this.direction = direction;
         }
         public void SetPosition(Position position)
         {

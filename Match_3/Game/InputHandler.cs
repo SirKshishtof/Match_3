@@ -23,11 +23,11 @@ namespace Match_3
                     int x = ((e.X - 300) / drawing.CellSize);
                     int y = ((e.Y - 10) / drawing.CellSize);
 
-                    if (drawing.gameplay.SelectElement is null) drawing.gameplay.SelectElement = new Position(x, y);
+                    if (drawing.gameplay.SelectElem is null) drawing.gameplay.SelectElem = new Position(x, y);
                     else
                     {
-                        int x0 = drawing.gameplay.SelectElement.Value.x;
-                        int y0 = drawing.gameplay.SelectElement.Value.y;
+                        int x0 = drawing.gameplay.SelectElem.Value.x;
+                        int y0 = drawing.gameplay.SelectElem.Value.y;
 
                         Position position = new Position(0,0);
 
@@ -43,17 +43,17 @@ namespace Match_3
                         if (position != Position.Non)
                         {
                             drawing.gameplay.TrySwichElem = new Position(x, y);
-                            drawing.gameplay.SwipeElementCoord(-position,position);                            
+                            drawing.gameplay.SwipeElementCoord(position,-position);                            
                         }
                         else
                         {
-                            drawing.gameplay.SelectElement = null;
+                            drawing.gameplay.SelectElem = null;
                         }
                     }
                 }
                 else
                 {
-                    drawing.gameplay.SelectElement = null; 
+                    drawing.gameplay.SelectElem = null; 
                 }
             }
         }
@@ -65,7 +65,5 @@ namespace Match_3
             if (x + 1 == x0 && y == y0) { return Direction.Left; }
             return Direction.Non;
         }
-
-
     }
 }
