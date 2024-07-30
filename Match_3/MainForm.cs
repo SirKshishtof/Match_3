@@ -1,10 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
 
 namespace Match_3
 {
@@ -36,6 +29,7 @@ namespace Match_3
         {
             if (gameplay.IsGameStart)
             {
+
                 drawing.Draw();
                 if (gameplay.RemainingTime == 0)
                 {
@@ -46,13 +40,25 @@ namespace Match_3
                     GameOver_label.Text = $"Gameover\nScore:{gameplay.Score}";
                     GameOver_label.Visible = true;
                 }
+
+
             }
         }
         private void UpdateImage(object? sender, EventArgs e) => Invalidate(new Rectangle(0, 0, 1, 1));
-        private void UpdateGame(object? sender, EventArgs e) => Invalidate(new Rectangle(0, 0, 1, 1));
         private void MainForm_MouseClick(object sender, MouseEventArgs e)
         {
-            inputHandler.HendelMouseClick(e);
+            bool canMove = true;
+            for (int x = 0; x < GameSettings.MatrixSizeX; x++)
+            {
+                for (int y = 0; y < GameSettings.MatrixSizeX; y++)
+                {
+                    if (!gameplay.ElemMatrix[x][y].OnPosition) { canMove = false; break; }
+                }
+            }
+            if (canMove)
+            {
+                inputHandler.HendelMouseClick(e);
+            }
         }
         private void Play_Button_Click(object sender, EventArgs e)
         {

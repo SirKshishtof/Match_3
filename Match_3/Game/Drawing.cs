@@ -1,11 +1,4 @@
 ﻿
-using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Xml.Linq;
-
 
 namespace Match_3
 {
@@ -164,6 +157,7 @@ namespace Match_3
                 for (int y = 0; y < GameSettings.MatrixSizeY; y++)
                 {
                     DrawElement(gameplay.ElemMatrix[x][y]);
+
                     gameplay.CheckElementsForCollapse(x, y);
                 }
             }
