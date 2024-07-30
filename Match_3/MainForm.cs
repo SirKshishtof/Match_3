@@ -26,7 +26,7 @@ namespace Match_3
         {
             Play_Button.Location = new Point(Width / 2 - Play_Button.Size.Width / 2, Height / 2 - Play_Button.Size.Height / 2);
             GameOver_label.Location = new Point(Width / 2 - Ok_Button.Size.Width / 2,
-                                                Height / 2 - Ok_Button.Size.Height / 2 - GameOver_label.Height);
+                                                Height / 2 - Ok_Button.Size.Height / 2 - 2*GameOver_label.Height);
             Ok_Button.Location = new Point(Width / 2 - Ok_Button.Size.Width / 2, Height / 2 - Ok_Button.Size.Height / 2);
             drawing.SetMetodInTick(new EventHandler(UpdateImage));
             drawing.LoadImage();
@@ -43,6 +43,7 @@ namespace Match_3
                     gameplay.IsGameStart = false;
                     gameplay.StopTimer();
                     Ok_Button.Visible = true;
+                    GameOver_label.Text = $"{GameOver_label.Text }\nScore:{gameplay.Score}";
                     GameOver_label.Visible = true;
                 }
             }
